@@ -26,7 +26,7 @@ def _authenticate_by_description():
 
 
 class OrderBusTicketApi(http.Controller):
-    @http.route('/api/v1/order/create', type='http', auth='none', methods=['POST'], csrf=False, cors='*')
+    @http.route('/api/v1/order/create', type='http', auth='none', methods=['POST'], csrf=False )
     def create_order(self, **kw):
         """
         Vytvoří novou cenovou nabídku (Sale Order) pro vybraná sedadla.

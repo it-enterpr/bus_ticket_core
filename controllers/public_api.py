@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class PublicBusTicketApi(http.Controller):
     # UJISTĚTE SE, ŽE JE ZDE 'GET' A 'auth="public"'
-    @http.route('/api/v1/cities', type='http', auth='public', methods=['GET'], csrf=False, cors='*')
+    @http.route('/api/v1/cities', type='http', auth='public', methods=['GET'], csrf=False )
     def get_cities(self, **kw):
         """Vrátí unikátní seznam měst ze všech zastávek."""
         try:

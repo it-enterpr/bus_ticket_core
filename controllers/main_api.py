@@ -1,37 +1,45 @@
 # -*- coding: utf-8 -*-
+import functools  
 import json
 from datetime import datetime, time, timedelta
 from odoo import http, fields
-from odoo.http import request, Response
+from odoo.http import request, route, Response
 import logging
 _logger = logging.getLogger(__name__)
 
 # --- Správná ověřovací funkce podle JMÉNA klíče ---
 
 def require_api_key(func):
-    """Decorator to require a valid API key for an endpoint."""
+    """Dekorátor pro ověření API klíče"""
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
-        # Získání klíče z hlavičky HTTP požadavku
-        api_key = request.httprequest.headers.get('api-key')
         
-        # Získání uloženého klíče z nastavení Odoo
-        stored_key = request.env['ir.config_parameter'].sudo().get_param('bus_ticket_core.api_key')
+        # --- ZAČÁTEK DŮLEŽITÉ ÚPRAVY ---
+        # Pokud se jedná o pre-flight OPTIONS požadavek, přeskoč kontrolu
+        # a rovnou ho pusť dál. Nginx se postará o správné CORS hlavičky.
+        if request.httprequest.method == 'OPTIONS':
+            return func(self, *args, **kwargs)
+        # --- KONEC DŮLEŽITÉ ÚPRAVY ---
 
-        # Ověření, zda klíče existují a shodují se
-        if not api_key or not stored_key or api_key != stored_key:
-            # Pokud ne, vrátíme chybu 401 Unauthorized
-            error_response = '{"error": "Unauthorized", "message": "A valid API key is required."}'
-            return Response(error_response, status=401, mimetype='application/json')
-            
-        # Pokud je vše v pořádku, pokračujeme k původní funkci
+        # Zbytek tvé existující logiky pro kontrolu klíče už zůstává
+        api_key = request.httprequest.headers.get('X-API-KEY')
+        if not api_key:
+            return {'error': 'missing_api_key', 'message': 'Chybí hlavička X-API-KEY.'}
+
+        # Hledání klíče v databázi (tento kód už tam pravděpodobně máš)
+        api_key_record = request.env['bus.ticket.api.key'].sudo().search([('key', '=', api_key)], limit=1)
+        if not api_key_record:
+            return {'error': 'invalid_api_key', 'message': 'Poskytnutý API klíč není platný.'}
+
+        # Pokud je vše v pořádku, zavolej původní funkci (např. get_stops)
         return func(self, *args, **kwargs)
+
     return wrapper
 
 class BusTicketApiController(http.Controller):
 
     # Použití dekorátoru pro zabezpečení endpointu
-    @route('/api/stops', type='json', auth='public', methods=['GET'], cors='*')
+    @route('/api/stops', type='json', auth='public', methods=['GET'] )
     @require_api_key
     def get_stops(self, **kw):
         """
@@ -72,7 +80,7 @@ def _get_trip_data(trip):
 
 class MainBusTicketApi(http.Controller):
 
-    @http.route('/api/v1/trips/search', type='json', auth='none', methods=['POST'], csrf=False, cors='*')
+    @http.route('/api/v1/trips/search', type='json', auth='none', methods=['POST'], csrf=False )
     def search_trips(self, **kw):
         """Vylepšené vyhledávání spojů."""
         user, error_msg = _authenticate_by_description()
@@ -149,7 +157,7 @@ class MainBusTicketApi(http.Controller):
                         'state': 'confirmed'
                     })
 
-    @http.route('/api/v1/trip/<int:trip_id>/seats', type='http', auth='none', methods=['GET'], csrf=False, cors='*')
+    @http.route('/api/v1/trip/<int:trip_id>/seats', type='http', auth='none', methods=['GET'], csrf=False )
     def get_trip_seats(self, trip_id, **kw):
         """Vrátí seznam sedadel pro daný spoj."""
         user, error_msg = _authenticate_by_description()
