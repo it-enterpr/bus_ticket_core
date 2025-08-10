@@ -13,6 +13,7 @@
         'security/ir.model.access.csv',
         'data/product_data.xml',
         'data/cron_jobs.xml',
+        'views/res_config_settings_views.xml', # PŘIDAT TENTO ŘÁDEK
         'views/views.xml',
     ],
     "application": False,  # core není samostatná aplikace

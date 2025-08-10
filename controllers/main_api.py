@@ -7,6 +7,41 @@ import logging
 _logger = logging.getLogger(__name__)
 
 # --- Správná ověřovací funkce podle JMÉNA klíče ---
+
+def require_api_key(func):
+    """Decorator to require a valid API key for an endpoint."""
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        # Získání klíče z hlavičky HTTP požadavku
+        api_key = request.httprequest.headers.get('api-key')
+        
+        # Získání uloženého klíče z nastavení Odoo
+        stored_key = request.env['ir.config_parameter'].sudo().get_param('bus_ticket_core.api_key')
+
+        # Ověření, zda klíče existují a shodují se
+        if not api_key or not stored_key or api_key != stored_key:
+            # Pokud ne, vrátíme chybu 401 Unauthorized
+            error_response = '{"error": "Unauthorized", "message": "A valid API key is required."}'
+            return Response(error_response, status=401, mimetype='application/json')
+            
+        # Pokud je vše v pořádku, pokračujeme k původní funkci
+        return func(self, *args, **kwargs)
+    return wrapper
+
+class BusTicketApiController(http.Controller):
+
+    # Použití dekorátoru pro zabezpečení endpointu
+    @route('/api/stops', type='json', auth='public', methods=['GET'], cors='*')
+    @require_api_key
+    def get_stops(self, **kw):
+        """
+        Returns a list of all bus stops.
+        Requires a valid 'api-key' in the request headers.
+        """
+        stops_data = request.env['bus.ticket.stop'].search_read([], ['id', 'name', 'city'])
+        return stops_data
+
+
 def _authenticate_by_description():
     """Ověří požadavek podle JMÉNA (popisku) API klíče v hlavičce."""
     key_description = request.httprequest.headers.get('X-API-Key')

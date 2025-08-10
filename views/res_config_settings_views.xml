@@ -1,0 +1,27 @@
+<odoo>
+    <record id="res_config_settings_view_form_bus_ticket" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.bus.ticket</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Bus Ticket API" string="Bus Ticket API" data-key="bus_ticket_core">
+                    <h2>API Configuration</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="api_key"/>
+                                <div class="text-muted">
+                                    The secret key required for API access. Keep it secure.
+                                </div>
+                                <div class="content-group">
+                                    <field name="api_key" class="oe_input" password="True"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
