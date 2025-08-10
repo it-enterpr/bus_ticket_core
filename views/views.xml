@@ -1,0 +1,341 @@
+<odoo>
+    <!-- 
+        ========================================
+        Hlavní Menu Aplikace
+        ========================================
+    -->
+    <menuitem id="menu_bus_ticket_root" name="Bus Tickets" sequence="10"/>
+    <menuitem id="menu_bus_ticket_main" name="Bus Tickets" parent="menu_bus_ticket_root" sequence="10"/>
+    <menuitem id="menu_bus_ticket_config" name="Configuration" parent="menu_bus_ticket_root" sequence="100"/>
+
+    <!-- 
+        ========================================
+        Pohledy a Menu pro Zastávky (Stops)
+        ========================================
+    -->
+    <record id="bus_ticket_core_stop_list" model="ir.ui.view">
+        <field name="name">bus.ticket.stop.list</field>
+        <field name="model">bus.ticket.stop</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="city"/>
+            </list>
+        </field>
+    </record>
+    <record id="bus_ticket_core_stop_form" model="ir.ui.view">
+        <field name="name">bus.ticket.stop.form</field>
+        <field name="model">bus.ticket.stop</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="city" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_bus_ticket_stop" model="ir.actions.act_window">
+        <field name="name">Stops</field>
+        <field name="res_model">bus.ticket.stop</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_bus_ticket_stop" name="Stops" parent="menu_bus_ticket_config" action="action_bus_ticket_stop" sequence="10"/>
+
+    <!-- 
+        ========================================
+        Pohledy pro Trasy (Routes)
+        ========================================
+    -->
+    <record id="bus_ticket_core_route_list" model="ir.ui.view">
+        <field name="name">bus.ticket.route.list</field>
+        <field name="model">bus.ticket.route</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="start_stop_id"/>
+                <field name="end_stop_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+    <record id="bus_ticket_core_route_form" model="ir.ui.view">
+        <field name="name">bus.ticket.route.form</field>
+        <field name="model">bus.ticket.route</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="generate_pricing" type="object" string="Generate Price Pairs" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Prague - Brno Express"/></h1>
+                    </div>
+                    <group>
+                        <group string="Overview">
+                            <field name="start_stop_id" readonly="1"/>
+                            <field name="end_stop_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Stops &amp; Timetable">
+                            <field name="stop_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="stop_id"/>
+                                    <field name="offset_days"/>
+                                    <field name="offset_time" widget="float_time"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Pricing">
+                            <field name="price_ids">
+                                <list editable="bottom">
+                                    <field name="stop_from_id"/>
+                                    <field name="stop_to_id"/>
+                                    <field name="price"/>
+                                    <field name="currency_id" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_bus_ticket_route" model="ir.actions.act_window">
+        <field name="name">Routes</field>
+        <field name="res_model">bus.ticket.route</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_bus_ticket_route" name="Routes" parent="menu_bus_ticket_config" action="action_bus_ticket_route" sequence="20"/>
+
+    <!-- 
+        ========================================
+        Pohledy a Menu pro Šablony (Templates)
+        ========================================
+    -->
+    <record id="bus_ticket_core_template_list" model="ir.ui.view">
+        <field name="name">bus.ticket.trip.template.list</field>
+        <field name="model">bus.ticket.trip.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="route_id"/>
+                <field name="departure_time" widget="float_time"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="bus_ticket_core_template_form" model="ir.ui.view">
+        <field name="name">bus.ticket.trip.template.form</field>
+        <field name="model">bus.ticket.trip.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="route_id"/>
+                            <field name="company_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="vehicle_id"/>
+                            <field name="driver_id"/>
+                            <field name="departure_time" widget="float_time"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Schedule">
+                            <group>
+                                <label for="monday" string="Days of Week"/>
+                                <div>
+                                    <field name="monday" class="oe_inline"/> <label for="monday" string="Mon"/>
+                                    <field name="tuesday" class="oe_inline"/> <label for="tuesday" string="Tue"/>
+                                    <field name="wednesday" class="oe_inline"/> <label for="wednesday" string="Wed"/>
+                                    <field name="thursday" class="oe_inline"/> <label for="thursday" string="Thu"/>
+                                    <field name="friday" class="oe_inline"/> <label for="friday" string="Fri"/>
+                                    <field name="saturday" class="oe_inline"/> <label for="saturday" string="Sat"/>
+                                    <field name="sunday" class="oe_inline"/> <label for="sunday" string="Sun"/>
+                                </div>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                        </page>
+                        <page string="Exception Dates">
+                            <field name="exception_date_ids">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="reason"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_bus_ticket_template" model="ir.actions.act_window">
+        <field name="name">Trip Templates</field>
+        <field name="res_model">bus.ticket.trip.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_bus_ticket_template" name="Trip Templates" parent="menu_bus_ticket_config" action="action_bus_ticket_template" sequence="30"/>
+
+    <!-- 
+        ========================================
+        QWeb šablona pro mapu sedadel
+        ========================================
+    -->
+    <template id="qweb_seat_map" name="Bus Seat Map">
+        <div style="display: grid; grid-template-columns: repeat(5, 40px); grid-gap: 5px; padding: 10px; background-color: #f0f0f0; border-radius: 5px; max-width: 250px;">
+            <div style="grid-column: 1 / span 2; grid-row: 1; text-align: center; padding: 5px;">
+                <i class="fa fa-2x fa-steering-wheel" title="Driver"/>
+            </div>
+            <t t-foreach="seats" t-as="seat">
+                <div t-attf-style="
+                    grid-column: {{seat.pos_x + 1}};
+                    grid-row: {{seat.pos_y + 2}};
+                    padding: 10px;
+                    border-radius: 5px;
+                    text-align: center;
+                    font-weight: bold;
+                    color: white;
+                    background-color: {{
+                        '#28a745' if seat.state == 'available' else
+                        '#ffc107' if seat.state == 'reserved' else
+                        '#6c757d'
+                    }};"
+                    t-att-title="seat.name">
+                    <span t-esc="seat.number"/>
+                </div>
+            </t>
+        </div>
+    </template>
+
+    <!-- 
+        ========================================
+        UPRAVENO: Pohledy pro Spoje (Trips)
+        ========================================
+    -->
+    <record id="bus_ticket_core_trip_list" model="ir.ui.view">
+        <field name="name">bus.ticket.trip.list</field>
+        <field name="model">bus.ticket.trip</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="departure_time"/>
+                <field name="name"/>
+                <field name="route_id"/>
+                <field name="start_city"/>
+                <field name="end_city"/>
+                <field name="driver_id" optional="hide"/>
+                <field name="sold_seats_count"/>
+                <field name="total_revenue"/>
+                <field name="is_sellable" widget="boolean_toggle"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="bus_ticket_core_trip_form" model="ir.ui.view">
+        <field name="name">bus.ticket.trip.form</field>
+        <field name="model">bus.ticket.trip</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="generate_seats" type="object" string="Generate Seats" invisible="state != 'draft'"/>
+                    <button name="action_confirm" string="Confirm" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="route_id"/>
+                            <field name="vehicle_id"/>
+                            <field name="driver_id"/>
+                            <field name="start_city" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="departure_time"/>
+                            <field name="arrival_time" readonly="1"/>
+                            <field name="end_city" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Seat Map">
+                            <field name="seat_map_html" nolabel="1"/>
+                        </page>
+                        <page string="Seat List (Detail)">
+                            <field name="seat_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="name" readonly="1"/>
+                                    <field name="number"/>
+                                    <field name="state"/>
+                                    <field name="pos_x" optional="show"/>
+                                    <field name="pos_y" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record id="bus_ticket_core_trip_kanban" model="ir.ui.view">
+        <field name="name">bus.ticket.trip.kanban</field>
+        <field name="model">bus.ticket.trip</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="route_id"/>
+                <field name="departure_time"/>
+                <templates>
+                    <t t-name="kanban-card">
+                        <div class="oe_kanban_global_click">
+                            <strong><field name="name"/></strong>
+                            <div><field name="route_id"/></div>
+                            <div title="Departure Time"><i class="fa fa-clock-o"/> <field name="departure_time"/></div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="bus_ticket_core_trip_search" model="ir.ui.view">
+        <field name="name">bus.ticket.trip.search</field>
+        <field name="model">bus.ticket.trip</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="route_id"/>
+                <field name="driver_id"/>
+                <field name="vehicle_id"/>
+                <separator/>
+                <filter name="state_confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <separator/>
+                <filter name="group_by_route" string="Route" context="{'group_by': 'route_id'}"/>
+                <filter name="group_by_display_group" string="Date" context="{'group_by': 'display_group'}"/>
+            </search>
+        </field>
+    </record>
+    
+    <record id="action_bus_ticket_trip" model="ir.actions.act_window">
+        <field name="name">Trips</field>
+        <field name="res_model">bus.ticket.trip</field>
+        <field name="view_mode">list,form,kanban,pivot</field>
+        <field name="context">{'search_default_group_by_display_group': 1}</field>
+        <field name="search_view_id" ref="bus_ticket_core_trip_search"/>
+    </record>
+
+    <menuitem id="menu_bus_ticket_trip" name="Trips" parent="menu_bus_ticket_main" action="action_bus_ticket_trip" sequence="10"/>
+
+</odoo>

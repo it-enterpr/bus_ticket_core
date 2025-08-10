@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bus_ticket_route,bus.ticket.route.access,model_bus_ticket_route,base.group_user,1,1,1,1
+access_bus_ticket_stop,bus.ticket.stop.access,model_bus_ticket_stop,base.group_user,1,1,1,1
+access_bus_ticket_trip,bus.ticket.trip.access,model_bus_ticket_trip,base.group_user,1,1,1,1
+access_bus_ticket_price,bus.ticket.price.access,model_bus_ticket_price,base.group_user,1,1,1,1
+access_bus_ticket_way_point,bus.ticket.way.point.access,model_bus_ticket_way_point,base.group_user,1,1,1,1
+access_bus_ticket_seat_layout,bus.ticket.seat.layout.access,model_bus_ticket_seat_layout,base.group_user,1,1,1,1
+access_bus_ticket_seat_layout_line,bus.ticket.seat.layout.line.access,model_bus_ticket_seat_layout_line,base.group_user,1,1,1,1
+access_bus_ticket_trip_seat,bus.ticket.trip.seat.access,model_bus_ticket_trip_seat,base.group_user,1,1,1,1
+access_bus_ticket_trip_template,bus.ticket.trip.template.access,model_bus_ticket_trip_template,base.group_user,1,1,1,1
+access_bus_ticket_trip_template_exception,bus.ticket.trip.template.exception.access,model_bus_ticket_trip_template_exception,base.group_user,1,1,1,1
+access_bus_ticket_stop_public,bus.ticket.stop.access.public,model_bus_ticket_stop,base.group_public,1,0,0,0
