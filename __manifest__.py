@@ -15,7 +15,8 @@
         'data/cron_jobs.xml',
         'views/views.xml',
     ],
-    'application': True,
-    'installable': True,
+    "application": False,  # core není samostatná aplikace
+    "installable": True,
+    "auto_install": False,
     'icon': 'bus_ticket_core/static/description/icon.svg',
 }

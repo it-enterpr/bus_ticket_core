@@ -1,16 +1,15 @@
 <odoo>
-    <!-- 
-        ========================================
-        Hlavní Menu Aplikace
-        ========================================
+    <!--
+    ================================================================
+    CORE VIEWS, ACTIONS & TEMPLATES
+    Tento soubor definuje POUZE pohledy, akce a šablony ("motor" aplikace).
+    Neobsahuje žádné položky menu.
+    ================================================================
     -->
-    <menuitem id="menu_bus_ticket_root" name="Bus Tickets" sequence="10"/>
-    <menuitem id="menu_bus_ticket_main" name="Bus Tickets" parent="menu_bus_ticket_root" sequence="10"/>
-    <menuitem id="menu_bus_ticket_config" name="Configuration" parent="menu_bus_ticket_root" sequence="100"/>
 
-    <!-- 
+    <!--
         ========================================
-        Pohledy a Menu pro Zastávky (Stops)
+        Pohledy a Akce pro Zastávky (Stops)
         ========================================
     -->
     <record id="bus_ticket_core_stop_list" model="ir.ui.view">
@@ -42,11 +41,10 @@
         <field name="res_model">bus.ticket.stop</field>
         <field name="view_mode">list,form</field>
     </record>
-    <menuitem id="menu_bus_ticket_stop" name="Stops" parent="menu_bus_ticket_config" action="action_bus_ticket_stop" sequence="10"/>
 
-    <!-- 
+    <!--
         ========================================
-        Pohledy pro Trasy (Routes)
+        Pohledy a Akce pro Trasy (Routes)
         ========================================
     -->
     <record id="bus_ticket_core_route_list" model="ir.ui.view">
@@ -113,11 +111,10 @@
         <field name="res_model">bus.ticket.route</field>
         <field name="view_mode">list,form</field>
     </record>
-    <menuitem id="menu_bus_ticket_route" name="Routes" parent="menu_bus_ticket_config" action="action_bus_ticket_route" sequence="20"/>
 
-    <!-- 
+    <!--
         ========================================
-        Pohledy a Menu pro Šablony (Templates)
+        Pohledy a Akce pro Šablony (Templates)
         ========================================
     -->
     <record id="bus_ticket_core_template_list" model="ir.ui.view">
@@ -185,42 +182,10 @@
         <field name="res_model">bus.ticket.trip.template</field>
         <field name="view_mode">list,form</field>
     </record>
-    <menuitem id="menu_bus_ticket_template" name="Trip Templates" parent="menu_bus_ticket_config" action="action_bus_ticket_template" sequence="30"/>
 
-    <!-- 
+    <!--
         ========================================
-        QWeb šablona pro mapu sedadel
-        ========================================
-    -->
-    <template id="qweb_seat_map" name="Bus Seat Map">
-        <div style="display: grid; grid-template-columns: repeat(5, 40px); grid-gap: 5px; padding: 10px; background-color: #f0f0f0; border-radius: 5px; max-width: 250px;">
-            <div style="grid-column: 1 / span 2; grid-row: 1; text-align: center; padding: 5px;">
-                <i class="fa fa-2x fa-steering-wheel" title="Driver"/>
-            </div>
-            <t t-foreach="seats" t-as="seat">
-                <div t-attf-style="
-                    grid-column: {{seat.pos_x + 1}};
-                    grid-row: {{seat.pos_y + 2}};
-                    padding: 10px;
-                    border-radius: 5px;
-                    text-align: center;
-                    font-weight: bold;
-                    color: white;
-                    background-color: {{
-                        '#28a745' if seat.state == 'available' else
-                        '#ffc107' if seat.state == 'reserved' else
-                        '#6c757d'
-                    }};"
-                    t-att-title="seat.name">
-                    <span t-esc="seat.number"/>
-                </div>
-            </t>
-        </div>
-    </template>
-
-    <!-- 
-        ========================================
-        UPRAVENO: Pohledy pro Spoje (Trips)
+        Pohledy a Akce pro Spoje (Trips)
         ========================================
     -->
     <record id="bus_ticket_core_trip_list" model="ir.ui.view">
@@ -288,7 +253,6 @@
             </form>
         </field>
     </record>
-    
     <record id="bus_ticket_core_trip_kanban" model="ir.ui.view">
         <field name="name">bus.ticket.trip.kanban</field>
         <field name="model">bus.ticket.trip</field>
@@ -309,7 +273,6 @@
             </kanban>
         </field>
     </record>
-
     <record id="bus_ticket_core_trip_search" model="ir.ui.view">
         <field name="name">bus.ticket.trip.search</field>
         <field name="model">bus.ticket.trip</field>
@@ -327,7 +290,6 @@
             </search>
         </field>
     </record>
-    
     <record id="action_bus_ticket_trip" model="ir.actions.act_window">
         <field name="name">Trips</field>
         <field name="res_model">bus.ticket.trip</field>
@@ -336,6 +298,35 @@
         <field name="search_view_id" ref="bus_ticket_core_trip_search"/>
     </record>
 
-    <menuitem id="menu_bus_ticket_trip" name="Trips" parent="menu_bus_ticket_main" action="action_bus_ticket_trip" sequence="10"/>
+    <!--
+        ========================================
+        QWeb šablona pro mapu sedadel
+        ========================================
+    -->
+    <template id="qweb_seat_map" name="Bus Seat Map">
+        <div style="display: grid; grid-template-columns: repeat(5, 40px); grid-gap: 5px; padding: 10px; background-color: #f0f0f0; border-radius: 5px; max-width: 250px;">
+            <div style="grid-column: 1 / span 2; grid-row: 1; text-align: center; padding: 5px;">
+                <i class="fa fa-2x fa-steering-wheel" title="Driver"/>
+            </div>
+            <t t-foreach="seats" t-as="seat">
+                <div t-attf-style="
+                    grid-column: {{seat.pos_x + 1}};
+                    grid-row: {{seat.pos_y + 2}};
+                    padding: 10px;
+                    border-radius: 5px;
+                    text-align: center;
+                    font-weight: bold;
+                    color: white;
+                    background-color: {{
+                        '#28a745' if seat.state == 'available' else
+                        '#ffc107' if seat.state == 'reserved' else
+                        '#6c757d'
+                    }};"
+                    t-att-title="seat.name">
+                    <span t-esc="seat.number"/>
+                </div>
+            </t>
+        </div>
+    </template>
 
 </odoo>
